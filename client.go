@@ -2,6 +2,7 @@ package wiremock
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -25,6 +26,7 @@ func NewClient(url string) *Client {
 
 // StubFor creates a new stub mapping.
 func (c *Client) StubFor(stubRule *StubRule) error {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	requestBody, err := stubRule.MarshalJSON()
 	if err != nil {
 		return fmt.Errorf("build stub request error: %s", err.Error())
@@ -50,6 +52,7 @@ func (c *Client) StubFor(stubRule *StubRule) error {
 
 // Clear deletes all stub mappings.
 func (c *Client) Clear() error {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", c.url, wiremockAdminMappingsURN), nil)
 	if err != nil {
 		return fmt.Errorf("build cleare Request error: %s", err.Error())
@@ -70,6 +73,7 @@ func (c *Client) Clear() error {
 
 // Reset restores stub mappings to the defaults defined back in the backing store.
 func (c *Client) Reset() error {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	res, err := http.Post(fmt.Sprintf("%s/%s/reset", c.url, wiremockAdminMappingsURN), "application/json", nil)
 	if err != nil {
 		return fmt.Errorf("reset Request error: %s", err.Error())
@@ -90,6 +94,7 @@ func (c *Client) Reset() error {
 
 // ResetAllScenarios resets back to start of the state of all configured scenarios.
 func (c *Client) ResetAllScenarios() error {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	res, err := http.Post(fmt.Sprintf("%s/%s/scenarios/reset", c.url, wiremockAdminURN), "application/json", nil)
 	if err != nil {
 		return fmt.Errorf("reset all scenarios Request error: %s", err.Error())
@@ -110,6 +115,7 @@ func (c *Client) ResetAllScenarios() error {
 
 // GetCountRequests gives count requests by criteria.
 func (c *Client) GetCountRequests(r *Request) (int64, error) {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	requestBody, err := r.MarshalJSON()
 	if err != nil {
 		return 0, fmt.Errorf("get count requests: build error: %s", err.Error())
@@ -154,6 +160,7 @@ func (c *Client) Verify(r *Request, expectedCount int64) (bool, error) {
 
 // DeleteStubByID deletes stub by id.
 func (c *Client) DeleteStubByID(id string) error {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s/%s", c.url, wiremockAdminMappingsURN, id), nil)
 	if err != nil {
 		return fmt.Errorf("delete stub by id: build request error: %s", err.Error())
