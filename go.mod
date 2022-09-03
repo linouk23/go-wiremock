@@ -1,4 +1,4 @@
-module github.com/walkerus/go-wiremock
+module github.com/linouk23/go-wiremock
 
 go 1.14
 
